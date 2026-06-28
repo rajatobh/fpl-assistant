@@ -28,6 +28,7 @@ for player in players[:10]:
 
 search = input("\nSearch for a player: ").lower()
 pos_filter = input("Filter by position (GK/DEF/MID/FWD or press Enter to skip): ").upper()
+budget = input("Max price (eg. 7.0 or press Enter to skip): ")
 
 for player in players:
     name = f"{player['first_name']} {player['second_name']}"
@@ -35,7 +36,9 @@ for player in players:
                          ]
     if search in name.lower():
         if pos_filter == "" or position == pos_filter:
-            team = teams[player['team']]
-            price = f"£{player['now_cost']/10}m"
-            points = player['total_points']
-            print(f"| {name:<30} | {team:<25} | {position:<5} | {price:<10} | {points:<10} |")
+            price_value = player['now_cost']/10
+            if budget == "" or price_value <= float(budget):
+                team = teams[player['team']]
+                price = f"£{player['now_cost']/10}m"
+                points = player['total_points']
+                print(f"| {name:<30} | {team:<25} | {position:<5} | {price:<10} | {points:<10} |")
