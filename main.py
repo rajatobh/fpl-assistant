@@ -1,4 +1,6 @@
 import requests
+from database import create_tables
+create_tables()
 
 url = "https://fantasy.premierleague.com/api/bootstrap-static/"
 response = requests.get(url)
