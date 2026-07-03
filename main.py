@@ -10,11 +10,11 @@ players = data['elements']
 positions = {t['id']: t['singular_name_short'] for t in data['element_types']}
 teams = {t['id']: t['name'] for t in data['teams']}
 
-divider = "-" * 97
+divider = "-" * 110
 
 def print_players(filtered_players):
     print(divider)
-    print(f"| {'Name':<30} | {'Team':<25} | {'Pos':<5} | {'Price':<10} | {'Points':<10} |")
+    print(f"| {'Name':<30} | {'Team':<25} | {'Pos':<5} | {'Price':<10} | {'Points':<10} | {'Value':<8} |")
     print(divider)
     for player in filtered_players:
         name = f"{player['first_name']} {player['second_name']}"
@@ -23,8 +23,9 @@ def print_players(filtered_players):
         team = teams[player['team']]
         price = f"£{price_value}m"
         points = player['total_points']
-        print(f"| {name:<30} | {team:<25} | {position:<5} | {price:<10} | {points:<10} |")
-    print("-" * 97)
+        value = round(points / price_value, 1) if price_value > 0 else 0
+        print(f"| {name:<30} | {team:<25} | {position:<5} | {price:<10} | {points:<10} | {value:<8} |")
+    print(divider)
 
 def search_players():
     search = input("Search for a player (or press Enter to skip): ").lower()
