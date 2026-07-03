@@ -28,7 +28,7 @@ def print_players(filtered_players):
 
 def search_players():
     search = input("Search for a player (or press Enter to skip): ").lower()
-    pos_filter = input("Filter by position (GK/DEF/MID/FWD or press Enter to skip): ").upper()
+    pos_filter = input("Filter by position (GKP/DEF/MID/FWD or press Enter to skip): ").upper()
     budget = input("Max price (eg. 7.0 or press Enter to skip): ")
     sort_by = input("Sort by (points/price or press Enter to skip): ").lower()
 
@@ -52,7 +52,8 @@ def search_players():
     print_players(filtered_players)
 
 def top_picks():
-    pos_filter = input("Position (GK/DEF/MID/FWD): ").upper()
+    global players
+    pos_filter = input("Position (GKP/DEF/MID/FWD): ").upper()
     filtered = [p for p in players if positions[p['element_type']] == pos_filter]
     filtered.sort(key=lambda x:x['total_points'], reverse=True)
     print_players(filtered[:10])
