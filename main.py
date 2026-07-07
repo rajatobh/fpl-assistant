@@ -52,6 +52,48 @@ def search_players():
 
     print_players(filtered_players)
 
+def player_history():
+    search = input("Enter player name: ").lower()
+    
+    matches = []
+    for player in players:
+        name = f"{player['first_name']} {player['second_name']}"
+        if search in name.lower():
+            matches.append(player)
+
+    if len(matches) == 0:
+        print("No players found!")
+        return
+    elif len(matches) > 1:
+        print("\nMultiple players found:")
+        for i, p in enumerate(matches):
+            name = f"{p['first_name']} {p['second_name']}"
+            print(f"{i + 1}. {name} - {teams[p['team']]}")
+        choice = int(input("Choose a player: ")) - 1
+        selected = matches[choice]
+    else:
+        selected = matches[0]
+
+    player_id = selected['id']
+    url = f"https://fantasy.premierleague.com/api/element-summary/{player_id}/"
+    response = requests.get(url)
+    history = response.json()['history']
+
+    name = f"{selected['first_name']} {selected['second_name']}"
+    print(f"\n--- Gameweek History: {name} ---")
+    print("-" * 60)
+    print(f"| {'GW':<5} | {'Points':<10} | {'Price':<10} | {'Goals':<8} | {'Assists':<8} |")
+    print("-" * 60)
+
+    total_of_points = 0
+
+    for gw in history:
+        print(f"| {gw['round']:<5} | {gw['total_points']:<10} | £{gw['value']/10:<9} | {gw['goals_scored']:<8} | {gw['assists']:<8} |")
+        total_of_points += gw['total_points']
+
+    print("-" * 60)
+    print(f"Total Points: {total_of_points}")
+
 def top_picks():
     global players
     pos_filter = input("Position (GKP/DEF/MID/FWD): ").upper()
@@ -133,7 +175,8 @@ while True:
     print("3. Add player to watchlist")
     print("4. View watchlist")
     print("5. Remove from watchlist")
-    print("6. Exit")
+    print("6. Player gameweek history")
+    print("7. Exit")
 
     choice = input("\nChoose an option: ")
 
@@ -148,6 +191,8 @@ while True:
     elif choice == "5":
         delete_from_watchlist()
     elif choice == "6":
+        player_history()
+    elif choice == "7":
         print("Goodbye!")
         break
     else:
