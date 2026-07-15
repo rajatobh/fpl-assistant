@@ -20,3 +20,10 @@ python main.py
 
 ## Data
 Live data pulled from the official FPL API — no authentication required.
+
+## Project Structure
+- `main.py` — menu and startup
+- `api.py` — FPL API calls
+- `display.py` — table formatting
+- `actions.py` — user interactions
+- `database.py` — watchlist persistence
