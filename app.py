@@ -51,3 +51,31 @@ def get_players(position: str = None, max_price: float = None, sort_by: str = No
         filtered.sort(key=lambda x: x['value'], reverse=True)
 
     return {"count": len(filtered), "players": filtered}
+
+@app.get("/players/top")
+def get_top_players(position: str, limit: int = 10):
+    filtered = []
+
+    for player in players:
+        position_name = positions[player['element_type']]
+        if position_name != position.upper():
+            continue
+
+        name = f"{player['first_name']} {player['second_name']}"
+        price_value = player['now_cost'] / 10
+        team = teams[player['team']]
+        points = player['total_points']
+        value = round(points / price_value, 1) if price_value > 0 else 0
+
+        filtered.append({
+            "name": name,
+            "team": team,
+            "position": position_name,
+            "price": price_value,
+            "points": points,
+            "value": value
+        })
+
+    filtered.sort(key=lambda x: x['points'], reverse=True)
+
+    return {"position": position.upper(), "players": filtered[:limit]}
