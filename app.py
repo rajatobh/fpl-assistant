@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from api import get_bootstrap_data
-from database import create_tables
+from database import create_tables, add_to_watchlist, get_watchlist, remove_from_watchlist
+from pydantic import BaseModel
 
 app = FastAPI(title="FPL Assistant API")
 
@@ -79,3 +80,37 @@ def get_top_players(position: str, limit: int = 10):
     filtered.sort(key=lambda x: x['points'], reverse=True)
 
     return {"position": position.upper(), "players": filtered[:limit]}
+
+class WatchlistPlayer (BaseModel):
+    player_id: int
+    name: str
+    team: str
+    position: str
+    price: float
+    points: int
+
+@app.get("/watchlist")
+def view_watchlist():
+    players = get_watchlist()
+    result = []
+    for player in players:
+        _, player_id, name, team, position, price, points = player
+        result.append({
+            "player_id": player_id,
+            "name": name,
+            "team": team,
+            "position": position,
+            "price": price,
+            "points": points
+        })
+    return {"count": len(result), "players": result}
+
+@app.post("/watchlist")
+def add_player_to_watchlist(player: WatchlistPlayer):
+    add_to_watchlist(player.player_id, player.name, player.team, player.position, player.price, player.points)
+    return {"message": f"{player.name} added to watchlist!"}
+
+@app.delete("/watchlist/{player_id}")
+def remove_player_from_watchlist(player_id: int, player_name: str):
+    remove_from_watchlist(player_id)
+    return {"message": f"{player_name} removed from watchlist!"}
