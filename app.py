@@ -36,6 +36,7 @@ def get_players(position: str = None, max_price: float = None, sort_by: str = No
             continue
 
         filtered.append({
+            "id": player['id'],
             "name": name,
             "team": team,
             "position": position_name,
@@ -69,6 +70,7 @@ def get_top_players(position: str, limit: int = 10):
         value = round(points / price_value, 1) if price_value > 0 else 0
 
         filtered.append({
+            "id": player['id'],
             "name": name,
             "team": team,
             "position": position_name,
