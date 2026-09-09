@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from api import get_bootstrap_data
+from api import get_bootstrap_data, get_player_history
 from database import create_tables, add_to_watchlist, get_watchlist, remove_from_watchlist
 from pydantic import BaseModel
 
@@ -129,6 +129,7 @@ def search_players(name: str):
             value = round(points / price_value, 1) if price_value > 0 else 0
 
             results.append({
+                "id": player['id'],
                 "name": full_name,
                 "team": team,
                 "position": position_name,
@@ -138,3 +139,25 @@ def search_players(name: str):
             })
 
     return {"count": len(results), "players": results}
+
+@app.get("/players/{player_id}/history")
+def get_history(player_id: int):
+    history = get_player_history(player_id)
+    
+    total_points = sum(gw['total_points'] for gw in history)
+
+    result = []
+    for gw in history:
+        result.append({
+            "gameweek": gw['round'],
+            "points": gw['total_points'],
+            "price": gw['value'] / 10,
+            "goals": gw['goals_scored'],
+            "assists": gw['assists']
+        })
+    
+    return {
+        "player_id": player_id,
+        "total_points": total_points,
+        "history": result
+    }
