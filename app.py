@@ -114,3 +114,27 @@ def add_player_to_watchlist(player: WatchlistPlayer):
 def remove_player_from_watchlist(player_id: int, player_name: str):
     remove_from_watchlist(player_id)
     return {"message": f"{player_name} removed from watchlist!"}
+
+@app.get("/players/search")
+def search_players(name: str):
+    results = []
+
+    for player in players:
+        full_name = f"{player['first_name']} {player['second_name']}"
+        if name.lower() in full_name.lower():
+            position_name = positions[player['element_type']]
+            price_value = player['now_cost'] / 10
+            team = teams[player['team']]
+            points = player['total_points']
+            value = round(points / price_value, 1) if price_value > 0 else 0
+
+            results.append({
+                "name": full_name,
+                "team": team,
+                "position": position_name,
+                "price": price_value,
+                "points": points,
+                "value": value
+            })
+
+    return {"count": len(results), "players": results}
