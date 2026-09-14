@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from api import get_bootstrap_data, get_player_history
 from database import create_tables, add_to_watchlist, get_watchlist, remove_from_watchlist
 from pydantic import BaseModel
@@ -139,12 +139,17 @@ def search_players(name: str):
                 "points": points,
                 "value": value
             })
+        if not results:
+            raise HTTPException(status_code=404, detail=f"No players found matching '{name}")
 
     return {"count": len(results), "players": results}
 
 @app.get("/players/{player_id}/history")
 def get_history(player_id: int):
-    history = get_player_history(player_id)
+    try:
+        history = get_player_history(player_id)
+    except Exception:
+        raise HTTPException(status_code=404, detail=f"Player with ID {player_id} not found")
     
     total_points = sum(gw['total_points'] for gw in history)
 
