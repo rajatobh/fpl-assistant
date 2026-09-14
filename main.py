@@ -1,4 +1,5 @@
 from api import get_bootstrap_data
+from rag import load_players_into_chroma, query_fpl_assistant
 from database import create_tables
 from actions import (
     search_players,
@@ -15,6 +16,9 @@ players = data['elements']
 positions = {t['id']: t['singular_name_short'] for t in data['element_types']}
 teams = {t['id']: t['name'] for t in data['teams']}
 
+# Load into ChromaDB
+load_players_into_chroma(players, positions, teams)
+
 # Setup database
 create_tables()
 
@@ -27,7 +31,8 @@ while True:
     print("4. View watchlist")
     print("5. Remove from watchlist")
     print("6. Player gameweek history")
-    print("7. Exit")
+    print("7. Ask FPL Assistant")
+    print("8. Exit")
 
     choice = input("\nChoose an option: ")
 
@@ -44,6 +49,10 @@ while True:
     elif choice == "6":
         player_history(players, positions, teams)
     elif choice == "7":
+        question = input("Ask your FPL assistant: ")
+        answer = query_fpl_assistant(question, players, positions, teams)
+        print(f"\n(~O_O~) {answer}")
+    elif choice == "8":
         print("Goodbye!")
         break
     else:
